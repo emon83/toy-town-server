@@ -50,15 +50,22 @@ async function run() {
       res.send(result);
     })
 
-/*     app.get('/myToys/:email', async (req, res)=> {
+    app.get('/toyDetails/:id', async (req, res)=> {
+      const id = req.params.id;
+      const curser = { _id: new ObjectId(id) };
+      const result = await allProductsCollection.find(curser).toArray();
+      res.send(result);
+    })
+
+    app.get('/myToys/:email', async (req, res)=> {
       console.log(req.params.email);
-      const jobs = await allProductsCollection
+      const result = await allProductsCollection
         .find({
           sellerEmail: req.params.email,
         })
         .toArray();
-      res.send(jobs);
-    }) */
+      res.send(result);
+    })
 
     app.post('/postToys', async (req, res)=> {
       const body = req.body;
@@ -67,7 +74,13 @@ async function run() {
       res.json(result);
     })
     
-
+    app.delete("/myToy/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      /* const result = await allProductsCollection.deleteOne(query);
+      res.send(result); */
+    });
+    
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
