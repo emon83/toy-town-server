@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -28,6 +28,46 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     // Send a ping to confirm a successful connection
+
+
+    const categoryProductsCollection = client.db("toyTownDB").collection("categoryProducts");
+    const allProductsCollection = client.db("toyTownDB").collection("allProducts");
+
+    app.get('/categoryProducts', async (req, res)=> {
+      const result = await categoryProductsCollection.find().toArray();
+      res.json(result);
+    })
+    app.get('/categoryProducts/:id', async (req, res)=> {
+      const id = req.params.id;
+      const curser = { _id: new ObjectId(id) };
+      const result = await categoryProductsCollection.find(curser).toArray();
+      res.json(result);
+    })
+
+
+    app.get('/allToys', async (req, res)=> {
+      const result = await allProductsCollection.find().toArray();
+      res.send(result);
+    })
+
+/*     app.get('/myToys/:email', async (req, res)=> {
+      console.log(req.params.email);
+      const jobs = await allProductsCollection
+        .find({
+          sellerEmail: req.params.email,
+        })
+        .toArray();
+      res.send(jobs);
+    }) */
+
+    app.post('/postToys', async (req, res)=> {
+      const body = req.body;
+      const result = await allProductsCollection.insertOne(body);
+      console.log(result);
+      res.json(result);
+    })
+    
+
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
