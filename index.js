@@ -37,6 +37,7 @@ async function run() {
       const result = await categoryProductsCollection.find().toArray();
       res.json(result);
     })
+
     app.get('/categoryProducts/:id', async (req, res)=> {
       const id = req.params.id;
       const curser = { _id: new ObjectId(id) };
@@ -58,7 +59,7 @@ async function run() {
     })
 
     app.get('/myToys/:email', async (req, res)=> {
-      console.log(req.params.email);
+      //console.log(req.params.email);
       const result = await allProductsCollection
         .find({
           sellerEmail: req.params.email,
@@ -67,18 +68,45 @@ async function run() {
       res.send(result);
     })
 
+    app.get("/allToysByText/:text", async (req, res) => {
+      const text = req.params.text;
+      const result = await allProductsCollection
+        .find({
+          $or: [
+            { toyName: { $regex: text, $options: "i" } },
+          ],
+        })
+        .toArray();
+      res.send(result);
+    });
+
     app.post('/postToys', async (req, res)=> {
       const body = req.body;
       const result = await allProductsCollection.insertOne(body);
       console.log(result);
       res.json(result);
     })
+    app.put('/myToy/:id', async (req, res)=>{
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const body = req.body;
+      console.log(body);
+      const updateDoc = {
+        $set: {
+          price: body.price,
+          quantity: body.quantity,
+          description: body.description,
+        },
+      }
+      const result = await allProductsCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    })
     
     app.delete("/myToy/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
-      /* const result = await allProductsCollection.deleteOne(query);
-      res.send(result); */
+      const result = await allProductsCollection.deleteOne(query);
+      res.send(result);
     });
     
     await client.db("admin").command({ ping: 1 });
