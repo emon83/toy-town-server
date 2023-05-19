@@ -33,17 +33,52 @@ async function run() {
     const categoryProductsCollection = client.db("toyTownDB").collection("categoryProducts");
     const allProductsCollection = client.db("toyTownDB").collection("allProducts");
 
-    app.get('/categoryProducts', async (req, res)=> {
+    app.get('/allCategoryProducts', async (req, res) => {
       const result = await categoryProductsCollection.find().toArray();
-      res.json(result);
+      res.send(result);
     })
 
-    app.get('/categoryProducts/:id', async (req, res)=> {
+    app.get('/allCategoryProducts/:id', async (req, res) => {
       const id = req.params.id;
       const curser = { _id: new ObjectId(id) };
       const result = await categoryProductsCollection.find(curser).toArray();
+      console.log(result);
+      res.send(result);
+    })
+
+    app.get('/scienceSubCategory', async (req, res)=> {
+      const result = await categoryProductsCollection.find({
+        category: "Science Toys"
+      }).toArray();
       res.json(result);
     })
+
+    app.get('/languageSubCategory', async (req, res)=> {
+      const result = await categoryProductsCollection.find({
+        category: "Language Toys"
+      }).toArray();
+      res.json(result);
+    })
+
+    app.get('/engineeringSubCategory', async (req, res)=> {
+      const result = await categoryProductsCollection.find({
+        category: "Engineering Toys"
+      }).toArray();
+      res.json(result);
+    })
+
+    /* app.get('/categoryProducts/:category', async (req, res)=> {
+      const category = req.params.category;
+      if (category == "Science Toys" || category == "Language Toys" || category == "Engineering Toys") {
+        const result = await categoryProductsCollection
+        .find({ status: category })
+        .sort({createAt:-1})
+        .toArray();
+      return res.send(result);
+      }
+      const result = await categoryProductsCollection.find(curser).sort({createAt:-1}).toArray();
+      res.json(result);
+    }) */
 
 
     app.get('/allToys', async (req, res)=> {
