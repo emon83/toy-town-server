@@ -7,7 +7,12 @@ const port = process.env.PORT || 5000;
 
 
 //middleware
-app.use(cors());
+const corsConfig = {
+  origin: "*",
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+};
+app.use(cors(corsConfig));
 app.use(express.json());
 
 const galleryData = require('./data/galleryData.json')
@@ -26,9 +31,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
-    // Send a ping to confirm a successful connection
-
+    //await client.connect();
 
     const categoryProductsCollection = client.db("toyTownDB").collection("categoryProducts");
     const allProductsCollection = client.db("toyTownDB").collection("allProducts");
@@ -107,6 +110,7 @@ async function run() {
       console.log(result);
       res.json(result);
     })
+    
     app.put('/updateToy/:id', async (req, res)=>{
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
@@ -131,6 +135,7 @@ async function run() {
       res.send(result);
     });
     
+    // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
