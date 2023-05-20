@@ -10,7 +10,7 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-
+const galleryData = require('./data/galleryData.json')
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.mt8kgrw.mongodb.net/?retryWrites=true&w=majority`;
 
@@ -66,20 +66,6 @@ async function run() {
       }).toArray();
       res.json(result);
     })
-
-    /* app.get('/categoryProducts/:category', async (req, res)=> {
-      const category = req.params.category;
-      if (category == "Science Toys" || category == "Language Toys" || category == "Engineering Toys") {
-        const result = await categoryProductsCollection
-        .find({ status: category })
-        .sort({createAt:-1})
-        .toArray();
-      return res.send(result);
-      }
-      const result = await categoryProductsCollection.find(curser).sort({createAt:-1}).toArray();
-      res.json(result);
-    }) */
-
 
     app.get('/allToys', async (req, res)=> {
       const result = await allProductsCollection.find().toArray();
@@ -156,10 +142,13 @@ run().catch(console.dir);
 
 
 
-
 app.get("/", (req, res) => {
     res.send("Toy Town is running!");
   });
+
+  app.get("/galleryData", (req, res) => {
+      res.send(galleryData);
+  })
   
   app.listen(port, () => {
     console.log(`Toy Town server is running on port ${port}`);
