@@ -94,11 +94,11 @@ async function run() {
     })
 
     app.get('/myToys/:email', async (req, res)=> {
-      //console.log(req.params.email);
+      const query = { sellerEmail: req.params.email }
+      const sort = req?.query?.sort === 'asc' ? 1 : -1 ;
       const result = await allProductsCollection
-        .find({
-          sellerEmail: req.params.email,
-        })
+        .find(query)
+        .sort({ price: sort })
         .toArray();
       res.send(result);
     })
@@ -121,7 +121,7 @@ async function run() {
       console.log(result);
       res.json(result);
     })
-    app.put('/myToy/:id', async (req, res)=>{
+    app.put('/updateToy/:id', async (req, res)=>{
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
       const body = req.body;
@@ -133,6 +133,7 @@ async function run() {
           description: body.description,
         },
       }
+      
       const result = await allProductsCollection.updateOne(filter, updateDoc);
       res.send(result);
     })
