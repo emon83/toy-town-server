@@ -173,6 +173,22 @@ async function run() {
       res.send(result);
     });
 
+    /*********** FEEDBACK RELATE APIS **********/
+
+    //Save feedback to database
+    app.post("/feedback", async (req, res) => {
+      const feedbackData = req.body;
+      const result = await feedbacksCollection.insertOne(feedbackData);
+      res.send(result);
+    });
+
+
+    //get user feedback
+    app.get('/feedbacks', async (req, res)=> {
+      const colleges = await feedbacksCollection.find().toArray();
+      res.send(colleges);
+    })
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
