@@ -1,10 +1,9 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const port = process.env.PORT || 5000;
-
 
 //middleware
 const corsConfig = {
@@ -23,7 +22,7 @@ const client = new MongoClient(uri, {
     version: ServerApiVersion.v1,
     strict: true,
     deprecationErrors: true,
-  }
+  },
 });
 
 async function run() {
@@ -31,85 +30,126 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     //await client.connect();
 
-    const categoryProductsCollection = client.db("toyTownDB").collection("categoryProducts");
-    const allProductsCollection = client.db("toyTownDB").collection("allProducts");
+    const usersCollection = client.db("toyTownDB").collection("users");
+    const categoryProductsCollection = client
+      .db("toyTownDB")
+      .collection("categoryProducts");
+    const allProductsCollection = client
+      .db("toyTownDB")
+      .collection("allProducts");
+    const feedbacksCollection = client.db("toyTownDB").collection("feedbacks");
 
-    app.get('/allCategoryProducts', async (req, res) => {
+    /*********** USER RELATE APIS **********/
+
+    //get all users to db
+    app.get("/users", async (req, res) => {
+      const users = await usersCollection.find().toArray();
+      res.send(users);
+    });
+
+    // Get user by email
+    app.get("/users/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const result = await usersCollection.findOne(query);
+      res.send(result);
+    });
+
+    //save user email and role in DB
+    app.put("/users/:email", async (req, res) => {
+      const email = req.params.email;
+      const user = req.body;
+      const query = { email: email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: user,
+      };
+      const result = await usersCollection.updateOne(query, updateDoc, options);
+      res.send(result);
+    });
+
+    /*********** PRODUCT RELATE APIS **********/
+
+    app.get("/allCategoryProducts", async (req, res) => {
       const result = await categoryProductsCollection.find().toArray();
       res.send(result);
-    })
+    });
 
-    app.get('/allCategoryProducts/:id', async (req, res) => {
+    app.get("/allCategoryProducts/:id", async (req, res) => {
       const id = req.params.id;
       const curser = { _id: new ObjectId(id) };
       const result = await categoryProductsCollection.find(curser).toArray();
       console.log(result);
       res.send(result);
-    })
+    });
 
-    app.get('/scienceSubCategory', async (req, res)=> {
-      const result = await categoryProductsCollection.find({
-        category: "Science Toys"
-      }).toArray();
+    app.get("/scienceSubCategory", async (req, res) => {
+      const result = await categoryProductsCollection
+        .find({
+          category: "Science Toys",
+        })
+        .toArray();
       res.json(result);
-    })
+    });
 
-    app.get('/languageSubCategory', async (req, res)=> {
-      const result = await categoryProductsCollection.find({
-        category: "Language Toys"
-      }).toArray();
+    app.get("/languageSubCategory", async (req, res) => {
+      const result = await categoryProductsCollection
+        .find({
+          category: "Language Toys",
+        })
+        .toArray();
       res.json(result);
-    })
+    });
 
-    app.get('/engineeringSubCategory', async (req, res)=> {
-      const result = await categoryProductsCollection.find({
-        category: "Engineering Toys"
-      }).toArray();
+    app.get("/engineeringSubCategory", async (req, res) => {
+      const result = await categoryProductsCollection
+        .find({
+          category: "Engineering Toys",
+        })
+        .toArray();
       res.json(result);
-    })
+    });
 
-    app.get('/allToys', async (req, res)=> {
+    app.get("/allToys", async (req, res) => {
       const result = await allProductsCollection.find().toArray();
       res.send(result);
-    })
+    });
 
-    app.get('/toyDetails/:id', async (req, res)=> {
+    app.get("/toyDetails/:id", async (req, res) => {
       const id = req.params.id;
       const curser = { _id: new ObjectId(id) };
       const result = await allProductsCollection.find(curser).toArray();
       res.send(result);
-    })
+    });
 
-    app.get('/myToys/:email', async (req, res)=> {
-      const query = { sellerEmail: req.params.email }
-      const sort = req?.query?.sort === 'asc' ? 1 : -1 ;
+    app.get("/myToys/:email", async (req, res) => {
+      const query = { sellerEmail: req.params.email };
+      const sort = req?.query?.sort === "asc" ? 1 : -1;
       const result = await allProductsCollection
         .find(query)
         .sort({ price: sort })
         .toArray();
       res.send(result);
-    })
+    });
 
     app.get("/allToysByText/:text", async (req, res) => {
       const text = req.params.text;
       const result = await allProductsCollection
         .find({
-          $or: [
-            { toyName: { $regex: text, $options: "i" } },
-          ],
+          $or: [{ toyName: { $regex: text, $options: "i" } }],
         })
         .toArray();
       res.send(result);
     });
 
-    app.post('/postToys', async (req, res)=> {
+    app.post("/postToys", async (req, res) => {
       const body = req.body;
       const result = await allProductsCollection.insertOne(body);
       console.log(result);
       res.json(result);
-    })
-    
-    app.put('/updateToy/:id', async (req, res)=>{
+    });
+
+    app.put("/updateToy/:id", async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
       const body = req.body;
@@ -120,22 +160,24 @@ async function run() {
           quantity: body.quantity,
           description: body.description,
         },
-      }
-      
+      };
+
       const result = await allProductsCollection.updateOne(filter, updateDoc);
       res.send(result);
-    })
-    
+    });
+
     app.delete("/myToy/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await allProductsCollection.deleteOne(query);
       res.send(result);
     });
-    
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    console.log(
+      "Pinged your deployment. You successfully connected to MongoDB!"
+    );
   } finally {
     // Ensures that the client will close when you finish/error
     //await client.close();
@@ -143,12 +185,10 @@ async function run() {
 }
 run().catch(console.dir);
 
-
-
 app.get("/", (req, res) => {
-    res.send("Toy Town is running!");
-  });
-  
-  app.listen(port, () => {
-    console.log(`Toy Town server is running on port ${port}`);
-  });
+  res.send("Toy Town is running!");
+});
+
+app.listen(port, () => {
+  console.log(`Toy Town server is running on port ${port}`);
+});
