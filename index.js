@@ -15,8 +15,6 @@ const corsConfig = {
 app.use(cors(corsConfig));
 app.use(express.json());
 
-const galleryData = require('./data/galleryData.json')
-
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.mt8kgrw.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -150,10 +148,6 @@ run().catch(console.dir);
 app.get("/", (req, res) => {
     res.send("Toy Town is running!");
   });
-
-  app.get("/galleryData", (req, res) => {
-      res.send(galleryData);
-  })
   
   app.listen(port, () => {
     console.log(`Toy Town server is running on port ${port}`);
