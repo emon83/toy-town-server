@@ -37,6 +37,9 @@ async function run() {
     const allProductsCollection = client
       .db("toyTownDB")
       .collection("allProducts");
+    const cartProductsCollection = client
+      .db("toyTownDB")
+      .collection("cartProduct");
     const feedbacksCollection = client.db("toyTownDB").collection("feedbacks");
 
     /*********** USER RELATE APIS **********/
@@ -56,7 +59,7 @@ async function run() {
     });
 
     //save user email and role in DB
-    app.put("/users/:email", async (req, res) => {
+    app.put("/user/:email", async (req, res) => {
       const email = req.params.email;
       const user = req.body;
       const query = { email: email };
@@ -79,7 +82,6 @@ async function run() {
       const id = req.params.id;
       const curser = { _id: new ObjectId(id) };
       const result = await categoryProductsCollection.find(curser).toArray();
-      console.log(result);
       res.send(result);
     });
 
@@ -110,15 +112,22 @@ async function run() {
       res.json(result);
     });
 
-    app.get("/allToys", async (req, res) => {
+    app.get("/allProducts", async (req, res) => {
       const result = await allProductsCollection.find().toArray();
       res.send(result);
     });
 
-    app.get("/toyDetails/:id", async (req, res) => {
+    app.get("/allProducts/:category", async (req, res) => {
+      const { category } = req.params;
+      const result = await allProductsCollection.find().toArray();
+      const filteredProducts = result.filter(item => item.product_category === category);
+      res.send(filteredProducts);
+    });
+
+    app.get("/productDetails/:id", async (req, res) => {
       const id = req.params.id;
       const curser = { _id: new ObjectId(id) };
-      const result = await allProductsCollection.find(curser).toArray();
+      const result = await allProductsCollection.findOne(curser);
       res.send(result);
     });
 
@@ -172,6 +181,36 @@ async function run() {
       const result = await allProductsCollection.deleteOne(query);
       res.send(result);
     });
+
+
+    /*********** SELECTED PRODUCT RELATE APIS **********/
+
+    //save cart product by user
+    app.post("/cartProduct", async (req, res) => {
+      const productData = req.body;
+      const result = await cartProductsCollection.insertOne(productData);
+      res.send(result);
+    });
+
+    //Get product by email
+    app.get("/cartProducts/:email", async (req, res) => {
+      const email = req.params.email;
+      const result = await cartProductsCollection.find().toArray();
+      const filteredProducts = result.filter(item => item.customer_email === email);
+      res.send(filteredProducts); 
+    });
+
+    //Post purchase products
+
+
+    //Get purchase products by email
+
+    //Post payment product
+
+
+    //Get payment product
+
+
 
     /*********** FEEDBACK RELATE APIS **********/
 
