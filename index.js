@@ -54,16 +54,15 @@ async function run() {
     //await client.connect();
 
     const usersCollection = client.db("toyTownDB").collection("users");
-    const categoryProductsCollection = client
-      .db("toyTownDB")
-      .collection("categoryProducts");
     const allProductsCollection = client
       .db("toyTownDB")
       .collection("allProducts");
     const cartProductsCollection = client
       .db("toyTownDB")
       .collection("cartProduct");
-    const paymentsCollection = client.db("toyTownDB").collection("paymentProduct");
+    const paymentsCollection = client
+      .db("toyTownDB")
+      .collection("paymentProduct");
     const feedbacksCollection = client.db("toyTownDB").collection("feedbacks");
 
     app.post("/jwt", (req, res) => {
@@ -157,45 +156,6 @@ async function run() {
 
     /*********** PRODUCT RELATE APIS **********/
 
-    app.get("/allCategoryProducts", async (req, res) => {
-      const result = await categoryProductsCollection.find().toArray();
-      res.send(result);
-    });
-
-    app.get("/allCategoryProducts/:id", async (req, res) => {
-      const id = req.params.id;
-      const curser = { _id: new ObjectId(id) };
-      const result = await categoryProductsCollection.find(curser).toArray();
-      res.send(result);
-    });
-
-    app.get("/scienceSubCategory", async (req, res) => {
-      const result = await categoryProductsCollection
-        .find({
-          category: "Science Toys",
-        })
-        .toArray();
-      res.json(result);
-    });
-
-    app.get("/languageSubCategory", async (req, res) => {
-      const result = await categoryProductsCollection
-        .find({
-          category: "Language Toys",
-        })
-        .toArray();
-      res.json(result);
-    });
-
-    app.get("/engineeringSubCategory", async (req, res) => {
-      const result = await categoryProductsCollection
-        .find({
-          category: "Engineering Toys",
-        })
-        .toArray();
-      res.json(result);
-    });
-
     app.post("/saveProduct", async (req, res) => {
       const body = req.body;
       const result = await allProductsCollection.insertOne(body);
@@ -223,16 +183,31 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/myToys/:email", async (req, res) => {
-      const query = { sellerEmail: req.params.email };
-      const sort = req?.query?.sort === "asc" ? 1 : -1;
-      const result = await allProductsCollection
-        .find(query)
-        .sort({ price: sort })
-        .toArray();
-      res.send(result);
+    // app.get("/myProducts/:email", async (req, res) => {
+    //   const query = req.params.email;
+    //   console.log(query);
+
+    //   const sort = req?.query?.sort === "asc" ? 1 : -1;
+    //   const result = await allProductsCollection
+    //     .find(query)
+    //     .sort({ price: sort })
+    //     .toArray();
+    //   res.send(result);
+    // });
+
+    app.get("/myProducts/:email", async (req, res) => {
+      const email = req.params.email;
+      if (!email) {
+        res.send([]);
+      }
+      const result = await allProductsCollection.find().toArray();
+      const filteredProducts = result.filter(
+        (item) => item.seller_email === email
+      );
+      res.send(filteredProducts);
     });
 
+    // search by product name
     app.get("/allToysByText/:text", async (req, res) => {
       const text = req.params.text;
       const result = await allProductsCollection
@@ -243,23 +218,50 @@ async function run() {
       res.send(result);
     });
 
-  
+    app.patch("/updateProduct/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const filter = { _id: new ObjectId(id) };
+        const updateData = req.body;
 
-    app.put("/updateToy/:id", async (req, res) => {
-      const id = req.params.id;
-      const filter = { _id: new ObjectId(id) };
-      const body = req.body;
-      console.log(body);
-      const updateDoc = {
-        $set: {
-          price: body.price,
-          quantity: body.quantity,
-          description: body.description,
-        },
-      };
+        const result = await allProductsCollection.updateOne(filter, {
+          $set: updateData,
+        });
 
-      const result = await allProductsCollection.updateOne(filter, updateDoc);
-      res.send(result);
+        if (result.matchedCount === 0) {
+          // No document matched the filter
+          return res.status(404).json({ message: "Product not found" });
+        }
+
+        res.json({ message: "Product updated successfully" });
+      } catch (error) {
+        console.error("Error updating product:", error);
+        res.status(500).json({ message: "Internal server error" });
+      }
+    });
+
+    // Update product status and remove the "status" property
+    app.patch("/approveProduct/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const filter = { _id: new ObjectId(id) };
+        const updateData = { $unset: { status: "" } }; // Use $unset to remove the "status" property
+
+        const result = await allProductsCollection.updateOne(
+          filter,
+          updateData
+        );
+
+        if (result.matchedCount === 0) {
+          // No document matched the filter
+          return res.status(404).json({ message: "Product not found" });
+        }
+
+        res.json({ message: "Product approved successfully" });
+      } catch (error) {
+        console.error("Error approving product:", error);
+        res.status(500).json({ message: "Internal server error" });
+      }
     });
 
     app.delete("/deleteProduct/:id", async (req, res) => {
@@ -300,7 +302,6 @@ async function run() {
       console.log(result);
     });
 
-
     /*********** PAYMENT PRODUCT RELATE APIS **********/
 
     //Post payment product
@@ -311,17 +312,15 @@ async function run() {
     });
 
     //Get payment product by email
-    app.get('/payment/:email', async (req, res) => {
+    app.get("/payment/:email", async (req, res) => {
       const email = req.params.email;
       if (!email) {
         res.send([]);
       }
       const result = await paymentsCollection.find().toArray();
-      const filteredProducts = result.filter(
-        (item) => item.email === email
-      );
+      const filteredProducts = result.filter((item) => item.email === email);
       res.send(filteredProducts);
-    })
+    });
 
     /*********** FEEDBACK RELATE APIS **********/
 
