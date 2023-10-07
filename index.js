@@ -63,6 +63,7 @@ async function run() {
     const cartProductsCollection = client
       .db("toyTownDB")
       .collection("cartProduct");
+    const paymentsCollection = client.db("toyTownDB").collection("paymentProduct");
     const feedbacksCollection = client.db("toyTownDB").collection("feedbacks");
 
     app.post("/jwt", (req, res) => {
@@ -195,6 +196,12 @@ async function run() {
       res.json(result);
     });
 
+    app.post("/saveProduct", async (req, res) => {
+      const body = req.body;
+      const result = await allProductsCollection.insertOne(body);
+      res.json(result);
+    });
+
     app.get("/allProducts", async (req, res) => {
       const result = await allProductsCollection.find().toArray();
       res.send(result);
@@ -236,12 +243,7 @@ async function run() {
       res.send(result);
     });
 
-    app.post("/postToys", async (req, res) => {
-      const body = req.body;
-      const result = await allProductsCollection.insertOne(body);
-      console.log(result);
-      res.json(result);
-    });
+  
 
     app.put("/updateToy/:id", async (req, res) => {
       const id = req.params.id;
@@ -260,7 +262,7 @@ async function run() {
       res.send(result);
     });
 
-    app.delete("/myToy/:id", async (req, res) => {
+    app.delete("/deleteProduct/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await allProductsCollection.deleteOne(query);
@@ -289,13 +291,37 @@ async function run() {
       res.send(filteredProducts);
     });
 
-    //Post purchase products
+    // Delete cart product
+    app.delete("/deleteCartProduct/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await allProductsCollection.deleteOne(query);
+      res.send(result);
+      console.log(result);
+    });
 
-    //Get purchase products by email
+
+    /*********** PAYMENT PRODUCT RELATE APIS **********/
 
     //Post payment product
+    app.post("/payment", async (req, res) => {
+      const paymentData = req.body;
+      const result = await paymentsCollection.insertOne(paymentData);
+      res.send(result);
+    });
 
-    //Get payment product
+    //Get payment product by email
+    app.get('/payment/:email', async (req, res) => {
+      const email = req.params.email;
+      if (!email) {
+        res.send([]);
+      }
+      const result = await paymentsCollection.find().toArray();
+      const filteredProducts = result.filter(
+        (item) => item.email === email
+      );
+      res.send(filteredProducts);
+    })
 
     /*********** FEEDBACK RELATE APIS **********/
 
