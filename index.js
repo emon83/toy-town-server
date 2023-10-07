@@ -146,6 +146,23 @@ async function run() {
       // console.log(result);
     });
 
+    //Update user by email in DB
+		app.put('/users/:email', async (req, res) => {
+			const email = req.params.email;
+			const user = req.body;
+			const query = { email: email };
+			const options = { upsert: true };
+			const updateDoc = {
+				$set: user,
+			};
+			const result = await usersCollection.updateOne(
+				query,
+				updateDoc,
+				options
+			);
+			res.send(result);
+		});
+
     //delete a user
     app.delete("/users/user/:id", async (req, res) => {
       const id = req.params.id;
@@ -218,6 +235,7 @@ async function run() {
       res.send(result);
     });
 
+    // Update product by Id (TODO)
     app.patch("/updateProduct/:id", async (req, res) => {
       try {
         const id = req.params.id;
