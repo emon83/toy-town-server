@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
+const jwt = require("jsonwebtoken");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const port = process.env.PORT || 5000;
@@ -9,7 +10,7 @@ const port = process.env.PORT || 5000;
 const corsConfig = {
   origin: "*",
   credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
 };
 app.use(cors(corsConfig));
 app.use(express.json());
@@ -24,6 +25,28 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   },
 });
+
+// validate jwt
+const verifyJWT = (req, res, next) => {
+  const authorization = req.headers.authorization;
+  if (!authorization) {
+    return res
+      .status(401)
+      .send({ error: true, message: "unauthorized access" });
+  }
+  // bearer token
+  const token = authorization.split(" ")[1];
+  console.log(authorization, token);
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+    if (err) {
+      return res
+        .status(403)
+        .send({ error: true, message: "unauthorized access" });
+    }
+    req.decoded = decoded;
+    next();
+  });
+};
 
 async function run() {
   try {
@@ -41,6 +64,14 @@ async function run() {
       .db("toyTownDB")
       .collection("cartProduct");
     const feedbacksCollection = client.db("toyTownDB").collection("feedbacks");
+
+    app.post("/jwt", (req, res) => {
+      const user = req.body;
+      const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: "1h",
+      });
+      res.send({ token });
+    });
 
     /*********** USER RELATE APIS **********/
 
@@ -68,6 +99,58 @@ async function run() {
         $set: user,
       };
       const result = await usersCollection.updateOne(query, updateDoc, options);
+      res.send(result);
+    });
+
+    //make seller user
+    app.patch("/users/user/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $unset: {
+          role: 1, // 1 indicates to unset the 'role' field
+        },
+      };
+      const result = await usersCollection.updateOne(filter, updateDoc);
+      res.send(result);
+      // console.log(result);
+    });
+
+    //make seller user
+    app.patch("/users/seller/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          role: "seller",
+        },
+      };
+
+      const result = await usersCollection.updateOne(filter, updateDoc);
+      res.send(result);
+      // console.log(result);
+    });
+
+    //make admin user
+    app.patch("/users/admin/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          role: "admin",
+        },
+      };
+
+      const result = await usersCollection.updateOne(filter, updateDoc);
+      res.send(result);
+      // console.log(result);
+    });
+
+    //delete a user
+    app.delete("/users/user/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const result = await usersCollection.deleteOne(filter);
       res.send(result);
     });
 
@@ -120,7 +203,9 @@ async function run() {
     app.get("/allProducts/:category", async (req, res) => {
       const { category } = req.params;
       const result = await allProductsCollection.find().toArray();
-      const filteredProducts = result.filter(item => item.product_category === category);
+      const filteredProducts = result.filter(
+        (item) => item.product_category === category
+      );
       res.send(filteredProducts);
     });
 
@@ -182,7 +267,6 @@ async function run() {
       res.send(result);
     });
 
-
     /*********** SELECTED PRODUCT RELATE APIS **********/
 
     //save cart product by user
@@ -195,22 +279,23 @@ async function run() {
     //Get product by email
     app.get("/cartProducts/:email", async (req, res) => {
       const email = req.params.email;
+      if (!email) {
+        res.send([]);
+      }
       const result = await cartProductsCollection.find().toArray();
-      const filteredProducts = result.filter(item => item.customer_email === email);
-      res.send(filteredProducts); 
+      const filteredProducts = result.filter(
+        (item) => item.customer_email === email
+      );
+      res.send(filteredProducts);
     });
 
     //Post purchase products
-
 
     //Get purchase products by email
 
     //Post payment product
 
-
     //Get payment product
-
-
 
     /*********** FEEDBACK RELATE APIS **********/
 
@@ -221,12 +306,11 @@ async function run() {
       res.send(result);
     });
 
-
     //get user feedback
-    app.get('/feedbacks', async (req, res)=> {
+    app.get("/feedbacks", async (req, res) => {
       const colleges = await feedbacksCollection.find().toArray();
       res.send(colleges);
-    })
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
