@@ -36,7 +36,6 @@ const verifyJWT = (req, res, next) => {
   }
   // bearer token
   const token = authorization.split(" ")[1];
-  console.log(authorization, token);
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
     if (err) {
       return res
@@ -259,7 +258,6 @@ async function run() {
 
         res.json({ message: "Product updated successfully" });
       } catch (error) {
-        console.error("Error updating product:", error);
         res.status(500).json({ message: "Internal server error" });
       }
     });
@@ -283,7 +281,6 @@ async function run() {
 
         res.json({ message: "Product approved successfully" });
       } catch (error) {
-        console.error("Error approving product:", error);
         res.status(500).json({ message: "Internal server error" });
       }
     });
@@ -347,7 +344,6 @@ async function run() {
       const query = { _id: new ObjectId(id) };
       const result = await allProductsCollection.deleteOne(query);
       res.send(result);
-      console.log(result);
     });
 
 
@@ -370,7 +366,7 @@ async function run() {
       const filteredProducts = result.filter((item) => item.email === email);
       res.send(filteredProducts);
     });
-    
+
 
     /*********** FEEDBACK RELATE APIS **********/
 
