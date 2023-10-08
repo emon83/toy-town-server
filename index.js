@@ -57,6 +57,9 @@ async function run() {
     const allProductsCollection = client
       .db("toyTownDB")
       .collection("allProducts");
+    const reviewProductsCollection = client
+      .db("toyTownDB")
+      .collection("reviewProducts");
     const cartProductsCollection = client
       .db("toyTownDB")
       .collection("cartProduct");
@@ -146,23 +149,6 @@ async function run() {
       // console.log(result);
     });
 
-    //Update user by email in DB
-		app.put('/users/:email', async (req, res) => {
-			const email = req.params.email;
-			const user = req.body;
-			const query = { email: email };
-			const options = { upsert: true };
-			const updateDoc = {
-				$set: user,
-			};
-			const result = await usersCollection.updateOne(
-				query,
-				updateDoc,
-				options
-			);
-			res.send(result);
-		});
-
     //delete a user
     app.delete("/users/user/:id", async (req, res) => {
       const id = req.params.id;
@@ -171,19 +157,37 @@ async function run() {
       res.send(result);
     });
 
+    //Update user by email in DB (TODO)
+    app.put("/user/:email", async (req, res) => {
+      const email = req.params.email;
+      const user = req.body;
+      const query = { email: email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: user,
+      };
+
+      const result = await usersCollection.updateOne(query, updateDoc, options);
+      res.send(result);
+    });
+
+
     /*********** PRODUCT RELATE APIS **********/
 
+    //Save cart product to database
     app.post("/saveProduct", async (req, res) => {
       const body = req.body;
       const result = await allProductsCollection.insertOne(body);
       res.json(result);
     });
 
+    // Get all products
     app.get("/allProducts", async (req, res) => {
       const result = await allProductsCollection.find().toArray();
       res.send(result);
     });
 
+    // Get all category products
     app.get("/allProducts/:category", async (req, res) => {
       const { category } = req.params;
       const result = await allProductsCollection.find().toArray();
@@ -193,6 +197,7 @@ async function run() {
       res.send(filteredProducts);
     });
 
+    // Get product details by ID
     app.get("/productDetails/:id", async (req, res) => {
       const id = req.params.id;
       const curser = { _id: new ObjectId(id) };
@@ -212,6 +217,7 @@ async function run() {
     //   res.send(result);
     // });
 
+    // Get my products by email
     app.get("/myProducts/:email", async (req, res) => {
       const email = req.params.email;
       if (!email) {
@@ -235,7 +241,7 @@ async function run() {
       res.send(result);
     });
 
-    // Update product by Id (TODO)
+    //Update product by Id (TODO)
     app.patch("/updateProduct/:id", async (req, res) => {
       try {
         const id = req.params.id;
@@ -282,12 +288,36 @@ async function run() {
       }
     });
 
+    // Delete product by ID
     app.delete("/deleteProduct/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await allProductsCollection.deleteOne(query);
       res.send(result);
     });
+
+
+    /*********** REVIEW PRODUCT RELATE APIS **********/
+
+    //save review product by user
+    app.post("/reviewProduct", async (req, res) => {
+      const reviewData = req.body;
+      const result = await reviewProductsCollection.insertOne(reviewData);
+      res.send(result);
+      // console.log(reviewData);
+    });
+
+    // get review products by Id
+    app.get("/reviewProduct/:id", async (req, res) => {
+      const id = req.params.id;
+
+      const result = await reviewProductsCollection.find().toArray();
+      const reviewProduct = result.filter(
+        (product) => product.product_id === id
+      );
+      res.send(reviewProduct);
+    });
+
 
     /*********** SELECTED PRODUCT RELATE APIS **********/
 
@@ -320,6 +350,7 @@ async function run() {
       console.log(result);
     });
 
+
     /*********** PAYMENT PRODUCT RELATE APIS **********/
 
     //Post payment product
@@ -339,6 +370,7 @@ async function run() {
       const filteredProducts = result.filter((item) => item.email === email);
       res.send(filteredProducts);
     });
+    
 
     /*********** FEEDBACK RELATE APIS **********/
 
