@@ -1,0 +1,107 @@
+https://i.ibb.co/MGSZXm5/user1.png
+https://i.ibb.co/xMT9PgP/author1.png
+https://i.ibb.co/47gFpXv/user2.png
+https://i.ibb.co/G71PnWF/user3.png
+https://i.ibb.co/jZGjwrF/author2.png
+https://i.ibb.co/B4vDx2L/author3.png
+https://i.ibb.co/0Cq7XJJ/author4.png
+https://i.ibb.co/30sqDDh/author5.png
+https://i.ibb.co/KjZnnV0/author6.png
+https://i.ibb.co/d5pYh5w/author7.png
+https://i.ibb.co/ZBkPpXV/author8.png
+https://i.ibb.co/ZNdLTRb/author10.png
+https://i.ibb.co/CV826q6/author12.png
+https://i.ibb.co/h7vJmXB/author9.png
+https://i.ibb.co/wrwg58J/author11.png
+https://i.ibb.co/7QjNDw4/student-1.png
+https://i.ibb.co/7b4707H/student-2.png
+
+
+// admin info(common pattern follow)
+{
+    "username": "John Doe",
+    "email": "johndoe@example.com",
+    "role": "admin",
+    "password": "user123",
+    "photoURL": "https://example.com/user0.jpg"
+  },
+  {
+    "username": "Alice Smith",
+    "email": "alicesmith@example.com",
+  }
+
+ // seller info
+ {
+    "username": "Bob Johnson",
+    "email": "bobjohnson@example.com"
+  },
+  {
+    "username": "Emily Brown",
+    "email": "emilybrown@example.com"
+  },
+  {
+    "username": "David Clark",
+    "email": "davidclark@example.com"
+  },
+  {
+    "username": "Olivia White",
+    "email": "oliviawhite@example.com"
+  },
+  {
+    "username": "Michael Lee",
+    "email": "michaellee@example.com"
+  }
+
+  // user info
+  {
+    "username": "Sophia Martin",
+    "email": "sophiamartin@example.com"
+  },
+  {
+    "username": "James Garcia",
+    "email": "jamesgarcia@example.com"
+  },
+  {
+    "username": "Emma Martinez",
+    "email": "emmamartinez@example.com"
+  },
+  {
+    "username": "William Taylor",
+    "email": "williamtaylor@example.com"
+  },
+  {
+    "username": "Isabella Hernandez",
+    "email": "isabellahernandez@example.com"
+  },
+  {
+    "username": "Mason Gonzalez",
+    "email": "masongonzalez@example.com"
+  },
+  {
+    "username": "Elizabeth Martinez",
+    "email": "elizabethmartinez@example.com"
+  },
+  {
+    "username": "Benjamin Adams",
+    "email": "benjaminadams@example.com"
+  },
+  {
+    "username": "Charlotte Wright",
+    "email": "charlottewright@example.com"
+  },
+  {
+    "username": "Daniel Rodriguez",
+    "email": "danielrodriguez@example.com"
+  },
+  {
+    "username": "Sophia King",
+    "email": "sophiaking@example.com"
+  },
+  {
+    "username": "Alexander Rivera",
+    "email": "alexanderrivera@example.com"
+  },
+  {
+    "username": "Ava Wood",
+    "email": "avawood@example.com"
+  }

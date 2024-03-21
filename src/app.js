@@ -18,10 +18,10 @@ app.get('/', (req, res) => {
   res.send('Toy town server is running!')
 })
 
-//* use global error handler middleware
-app.use(errorHandler);
-
 //* Not found middleware,
 app.use(notFound);
+
+//* use global error handler middleware
+app.use(errorHandler);
 
 export default app;
