@@ -1,8 +1,12 @@
 //* not found
+import httpStatus from "http-status";
+
 const notFound = (req, res, next) => {
-    const error = new Error(`Not Found: ${req.originalUrl}`);
-    res.status(404);
-    next(error);
-}
+  return res.status(httpStatus.NOT_FOUND).json({
+    success: false,
+    message: "API Not Found!!!",
+    error: "",
+  });
+};
 
 export default notFound;

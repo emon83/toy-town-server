@@ -1,4 +1,5 @@
-import catchAsync from "../utils/catchAsync";
+import catchAsync from "../utils/catchAsync.js";
+
 
 const zodValidationRequest = (schema) => {
   return catchAsync(async (req, res, next) => {

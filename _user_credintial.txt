@@ -1,16 +1,19 @@
 https://i.ibb.co/MGSZXm5/user1.png
 https://i.ibb.co/xMT9PgP/author1.png
-https://i.ibb.co/47gFpXv/user2.png
-https://i.ibb.co/G71PnWF/user3.png
+
 https://i.ibb.co/jZGjwrF/author2.png
-https://i.ibb.co/B4vDx2L/author3.png
-https://i.ibb.co/0Cq7XJJ/author4.png
 https://i.ibb.co/30sqDDh/author5.png
-https://i.ibb.co/KjZnnV0/author6.png
 https://i.ibb.co/d5pYh5w/author7.png
 https://i.ibb.co/ZBkPpXV/author8.png
 https://i.ibb.co/ZNdLTRb/author10.png
+
+https://i.ibb.co/0Cq7XJJ/author4.png
+https://i.ibb.co/47gFpXv/user2.png
+https://i.ibb.co/B4vDx2L/author3.png
+https://i.ibb.co/G71PnWF/user3.png
+https://i.ibb.co/KjZnnV0/author6.png
 https://i.ibb.co/CV826q6/author12.png
+
 https://i.ibb.co/h7vJmXB/author9.png
 https://i.ibb.co/wrwg58J/author11.png
 https://i.ibb.co/7QjNDw4/student-1.png
@@ -48,15 +51,12 @@ https://i.ibb.co/7b4707H/student-2.png
     "email": "oliviawhite@example.com"
   },
   {
-    "username": "Michael Lee",
-    "email": "michaellee@example.com"
-  }
-
-  // user info
-  {
     "username": "Sophia Martin",
     "email": "sophiamartin@example.com"
-  },
+  }
+ 
+
+  // user info
   {
     "username": "James Garcia",
     "email": "jamesgarcia@example.com"
@@ -82,20 +82,12 @@ https://i.ibb.co/7b4707H/student-2.png
     "email": "elizabethmartinez@example.com"
   },
   {
-    "username": "Benjamin Adams",
-    "email": "benjaminadams@example.com"
-  },
-  {
     "username": "Charlotte Wright",
     "email": "charlottewright@example.com"
   },
   {
-    "username": "Daniel Rodriguez",
-    "email": "danielrodriguez@example.com"
-  },
-  {
-    "username": "Sophia King",
-    "email": "sophiaking@example.com"
+    "username": "Sophia Smith",
+    "email": "sophiasmith@example.com"
   },
   {
     "username": "Alexander Rivera",
