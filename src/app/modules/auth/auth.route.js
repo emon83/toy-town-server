@@ -2,6 +2,8 @@ import express from "express";
 import { AuthControllers } from "./auth.controller.js";
 import zodValidationRequest from "../../middleware/validateRequest.js";
 import { AuthValidation } from "./auth.validation.js";
+import { USER_ROLE } from "../user/user.constant.js";
+import auth from "../../middleware/auth.js";
 
 const router = express.Router();
 
@@ -11,4 +13,21 @@ router.post(
   AuthControllers.loginUser,
 );
 
-  export const AuthRoutes = router;
+router.post(
+  '/change-password',
+  auth(
+    USER_ROLE.admin,
+    USER_ROLE.seller,
+    USER_ROLE.user,
+  ),
+  zodValidationRequest(AuthValidation.changePasswordValidationSchema),
+  AuthControllers.changePassword,
+);
+
+router.post(
+  '/refresh-token',
+  // zodValidationRequest(AuthValidation.refreshTokenValidationSchema),
+  AuthControllers.refreshToken,
+);
+
+export const AuthRoutes = router;

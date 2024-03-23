@@ -5,3 +5,7 @@ export const createToken = (jwtPayload, secret, expiresIn) => {
     expiresIn,
   });
 };
+
+export const verifyToken = (token, secret) => {
+  return jwt.verify(token, secret);
+};

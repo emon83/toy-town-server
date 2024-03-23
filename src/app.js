@@ -20,6 +20,12 @@ app.get('/', (req, res) => {
   res.send('Toy town server is running!')
 })
 
+// const test = async (req, res) => {
+//  console.log(req.cookies);
+// };
+
+// app.get('/test', test);
+
 //* Not found middleware,
 app.use(notFound);
 

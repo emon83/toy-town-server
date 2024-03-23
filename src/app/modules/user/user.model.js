@@ -24,6 +24,9 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    passwordChangedAt: {
+      type: Date,
+    },
     photoURL: {
       type: String,
       required: true,
