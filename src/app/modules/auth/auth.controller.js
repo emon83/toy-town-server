@@ -56,7 +56,19 @@ const loginUser = catchAsync(async (req, res) => {
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
-      message: 'Reset link is generated successfully!',
+      message: 'Reset link is generated successfully! Check your email!',
+      data: result,
+    });
+  });
+
+  const resetPassword = catchAsync(async (req, res) => {
+    const token = req.headers.authorization;
+  
+    const result = await AuthServices.resetPassword(req.body, token);
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Password reset successful!',
       data: result,
     });
   });
@@ -66,4 +78,5 @@ const loginUser = catchAsync(async (req, res) => {
     changePassword,
     refreshToken,
     forgetPassword,
+    resetPassword
   };
