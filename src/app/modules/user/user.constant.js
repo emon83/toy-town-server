@@ -5,3 +5,5 @@ export const USER_ROLE = {
     seller: 'seller',
     admin: 'admin',
   };
+
+  export const UserStatus = ['active', 'blocked'];

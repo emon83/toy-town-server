@@ -4,12 +4,14 @@ import config from './app/config/config.js';
 import notFound from './app/middleware/notFound.js';
 import router from './app/router/routes.js';
 import globalErrorHandler from './app/middleware/errorHandler.js';
+import cookieParser from 'cookie-parser';
 
 const app = express();
 
 //* parser
 app.use(express.json());
-app.use(cors({origin: config.client_url}));
+app.use(cors({origin: config.client_url, credentials: true }));
+app.use(cookieParser());
 
 //* application routes
 app.use('/api/v1', router);
